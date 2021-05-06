@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView, StatusBar} from 'react-native';
+import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import { Route, Switch, Link } from "react-router-native";
 import Navbar from '../../components/navBar';
 import Issues from '../../components/issues';
