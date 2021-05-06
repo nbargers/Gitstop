@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NativeRouter, Route, Link, Switch } from "react-router-native";
@@ -12,7 +11,6 @@ const App = () => {
   return (
     <NativeRouter>
         <View style={styles.container}>
-          
             <Route exact path="/" component={Login}></Route>
             <Route path="/home" component={Home}></Route>
             <Route path="/mentions" component={Mention}></Route>
