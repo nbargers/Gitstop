@@ -7,14 +7,12 @@ import Login from './Client/Containers/Login';
 import Mention from './Client/Containers/Mention';
 import User from './Client/Containers/User';
 import Repos from './Client/Containers/Repos';
-require('dotenv').config()
 
 const App = () => {
   return (
     <SafeAreaProvider>
       <NativeRouter>
           <View style={styles.container}>
-            
               <Route exact path="/" component={Login}></Route>
               <Route path="/home" component={Home}></Route>
               <Route path="/mentions" component={Mention}></Route>
