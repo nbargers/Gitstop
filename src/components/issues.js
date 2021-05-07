@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Modal, Alert, Pressable, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Modal, Alert, Pressable, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { Button, Overlay, ListItem, Icon, Input} from 'react-native-elements';
 import { Ionicons, Entypo, AntDesign, Foundation  } from '@expo/vector-icons'; 
 
@@ -7,9 +7,10 @@ export default (props) => {
   const [visible, setVisible] = useState(false);
   const [comments, setComments] = useState([{id: 1 , body: 'hello heloo heheheheheh ee i llloooo f  this is test 1 for a really long comment to see how it behaves'},{id:'This is the second Repo', body: 'this is test 2'},{id:'This is the third Repo', body: 'this is test 3'}]) 
   // const [user, setUser]= useState([{user: 'Geo', }, {User: 'Andrei'}])
-  const [text, setText] = React.useState("");
-  const [commentText, setCommentText] = React.useState("");
+  const [text, setText] = useState("");
+  const [commentText, setCommentText] =useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalID, setModalID] = useState('');
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -23,16 +24,17 @@ export default (props) => {
     setCommentText(input)
   };
 
-  const replaceOldComment = (id) => {
+  const replaceOldComment = () => {
     if(commentText === '') return
-    console.log('id', id)
-    const helperFunc = () => {
-      for(let i = 0; i < comments.length; i++){
-        if(comments[i].id === id) comments[i].body === commentText;
+    const newComments = comments.map(item => {
+      if(item.id === modalID){
+        item.body = commentText;
+        return item;
       }
-      setCommentText("");
-    }
-    setComments(helperFunc())
+      return item;
+    });
+    setCommentText('')
+    setComments(newComments);
   };
 
   const deleteComment  = (id) => {
@@ -45,74 +47,72 @@ export default (props) => {
     setComments([...comments, {id: text, body: text}]);
     console.log('comments', comments)
   };
-
-  const renderLinkList = () => {
-    
-  };
-
-  // useEffect(() => {
-  //   renderLinkList()
-  // }, [comments]);
-
  
   return (
-    <SafeAreaView style = {styles.container}>
+    <KeyboardAvoidingView behavior="padding" style = {styles.container}>
         <ListItem onPress={toggleOverlay} bottomDivider={true} style={styles.listItem}>
         <ListItem.Content style = {styles. listContent}>
             <ListItem.Title style = {styles.issueText}>{props.item.body}</ListItem.Title> 
         </ListItem.Content>
         </ListItem>
         <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle= {styles.overlayContainer}>
+          <ScrollView>
               {
                 comments.map((l, i) => (
-                  <ListItem key={i} bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>{l.body}</ListItem.Title>
-                    </ListItem.Content>
-                    <View style = {styles.icons}>
-                      <AntDesign id = {l.id} name="delete" size={24} color="black" style ={styles.updates} onPress = {() => deleteComment(l.id)}/>
-                      <Foundation id = {l.id} name="clipboard-pencil" size={24} color="black" style ={styles.updates} onPress = {() => setModalVisible(true)}/>
-                    </View>
-                    <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={modalVisible}
-                      onDismiss ={() => replaceOldComment(l.id)}
-                      onRequestClose={() => {
-                        setModalVisible(!modalVisible);
-                      }}
-                    > 
-                      <View style = {styles.modalPadding}> 
-                        <View style = {styles.modalBackground}>
-                          <Text style = {styles.modalText}>Update Comment Below</Text>
-                          <Input
-                          onChangeText={updateCommentText}
-                          multiline= {true}
-                          />
-                          <Pressable
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={() => setModalVisible(!modalVisible)}
-                          >
-                            <Text style={styles.textStyle}>Hide Modal</Text>
-                          </Pressable>
-                        </View>  
-                      </View> 
-                  </Modal>
-                  </ListItem>
+                    <ListItem key={i} bottomDivider>
+                      <ListItem.Content>
+                        <ListItem.Title>{l.body}</ListItem.Title>
+                      </ListItem.Content>
+                      <View style = {styles.icons}>
+                        <AntDesign id = {l.id} name="delete" size={24} color="black" style ={styles.updates} onPress = {() => deleteComment(l.id)}/>
+                        <Foundation id = {l.id} name="clipboard-pencil" size={24} color="black" style ={styles.updates} onPress = {(event) => {
+                          setModalID(l.id)
+                          setModalVisible(true)
+                          }}/>
+                      </View>
+                    </ListItem>
                 ))
               }
+            </ScrollView>
+            <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                      setModalVisible(!modalVisible);
+                    }}
+                  > 
+                    <View style = {styles.modalPadding}> 
+                      <View style = {styles.modalBackground}>
+                        <Text style = {styles.modalText}>Update Comment Below</Text>
+                        <Input
+                        onChangeText={updateCommentText}
+                        multiline= {true}
+                        />
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            replaceOldComment()
+                            setModalVisible(!modalVisible) 
+                          }}
+                        >
+                          <Text style={styles.textStyle}>Hide Modal</Text>
+                        </Pressable>
+                      </View>  
+                    </View> 
+                </Modal>
             <SafeAreaView >
-            <View style = {styles.safeZone}>
-                <Input
-                placeholder="Comment"
-                onChangeText={updateText}
-                multiline= {true}
-                />
-                <Ionicons name="send" size={24} color="black" onPress = {() => {updateComments(text)}}/>
-            </View>
-                </SafeAreaView>
+              <View style = {styles.safeZone}>
+                  <Input
+                  placeholder="Comment"
+                  onChangeText={updateText}
+                  multiline= {true}
+                  />
+                  <Ionicons name="send" size={24} color="black" onPress = {() => {updateComments(text)}}/>
+              </View>
+            </SafeAreaView>
         </Overlay>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
 
   modalPadding: {
-    paddingTop: 250,
+    paddingTop: 175,
     alignItems: 'center'
   },
 
