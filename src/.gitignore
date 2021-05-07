@@ -9,7 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 .env
-package.json
+package-lock.json
 yarn.lock
 
 
