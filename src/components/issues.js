@@ -1,43 +1,221 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, Alert} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Modal, Alert, Pressable, ScrollView} from 'react-native';
 import { Button, Overlay, ListItem, Icon, Input} from 'react-native-elements';
 import { Ionicons, Entypo, AntDesign, Foundation  } from '@expo/vector-icons'; 
 
 export default (props) => {
   const [visible, setVisible] = useState(false);
   const [comments, setComments] = useState([{id: 1 , body: 'hello heloo heheheheheh ee i llloooo f  this is test 1 for a really long comment to see how it behaves'},{id:'This is the second Repo', body: 'this is test 2'},{id:'This is the third Repo', body: 'this is test 3'}]) 
-  const [user, setUser]= useState([{user: 'Geo', }, {User: 'Andrei'}])
+  // const [user, setUser]= useState([{user: 'Geo', }, {User: 'Andrei'}])
   const [text, setText] = React.useState("");
+  const [commentText, setCommentText] = React.useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const toggleOverlay = () => {
     setVisible(!visible);
   };
 
-  const SeparatorComponent = () => {
-    return <View style={styles.separatorLine} />
-  }
-
-  const renderItem = ({ item }) => (
-  <View>  
-    <View style = {styles.items}>
-      <ListItem>
-          <ListItem.Content>
-              <ListItem.Title style= {styles.issues}>{item.body}</ListItem.Title>
-          </ListItem.Content>
-      </ListItem>
-    </View>
-    <View style = {styles.icons}>
-        <AntDesign name="delete" size={24} color="black" style ={styles.updates} onPress = {deleteComment(item.id)}/>
-        <Foundation name="clipboard-pencil" size={24} color="black" style ={styles.updates}/>
-    </View> 
-  </View>
-  );
-
   const updateText = (input) => {
     setText(input)
-  }
+  };
+
+  const updateCommentText = (input) => {
+    setCommentText(input)
+  };
+
+  const replaceOldComment = (id) => {
+    if(commentText === '') return
+    console.log('id', id)
+    const helperFunc = () => {
+      for(let i = 0; i < comments.length; i++){
+        if(comments[i].id === id) comments[i].body === commentText;
+      }
+      setCommentText("");
+    }
+    setComments(helperFunc())
+  };
+
+  const deleteComment  = (id) => {
+    console.log('id', id)
+    setComments(comments.filter(comments => comments.id !== id))
+  };
 
   const updateComments = (text) => {
+    if(text === '') return
+    setComments([...comments, {id: text, body: text}]);
+    console.log('comments', comments)
+  };
+
+  const renderLinkList = () => {
+    
+  };
+
+  // useEffect(() => {
+  //   renderLinkList()
+  // }, [comments]);
+
+ 
+  return (
+    <SafeAreaView style = {styles.container}>
+        <ListItem onPress={toggleOverlay} bottomDivider={true} style={styles.listItem}>
+        <ListItem.Content style = {styles. listContent}>
+            <ListItem.Title style = {styles.issueText}>{props.item.body}</ListItem.Title> 
+        </ListItem.Content>
+        </ListItem>
+        <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle= {styles.overlayContainer}>
+              {
+                comments.map((l, i) => (
+                  <ListItem key={i} bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>{l.body}</ListItem.Title>
+                    </ListItem.Content>
+                    <View style = {styles.icons}>
+                      <AntDesign id = {l.id} name="delete" size={24} color="black" style ={styles.updates} onPress = {() => deleteComment(l.id)}/>
+                      <Foundation id = {l.id} name="clipboard-pencil" size={24} color="black" style ={styles.updates} onPress = {() => setModalVisible(true)}/>
+                    </View>
+                    <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalVisible}
+                      onDismiss ={() => replaceOldComment(l.id)}
+                      onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                      }}
+                    > 
+                      <View style = {styles.modalPadding}> 
+                        <View style = {styles.modalBackground}>
+                          <Text style = {styles.modalText}>Update Comment Below</Text>
+                          <Input
+                          onChangeText={updateCommentText}
+                          multiline= {true}
+                          />
+                          <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                          >
+                            <Text style={styles.textStyle}>Hide Modal</Text>
+                          </Pressable>
+                        </View>  
+                      </View> 
+                  </Modal>
+                  </ListItem>
+                ))
+              }
+            <SafeAreaView >
+            <View style = {styles.safeZone}>
+                <Input
+                placeholder="Comment"
+                onChangeText={updateText}
+                multiline= {true}
+                />
+                <Ionicons name="send" size={24} color="black" onPress = {() => {updateComments(text)}}/>
+            </View>
+                </SafeAreaView>
+        </Overlay>
+    </SafeAreaView>
+  );
+}
+
+
+const styles = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center'
+  },
+
+  listItem: {
+    flex: 1,
+    width: 250,
+    alignItems: 'center',
+    justifyContent: 'center'
+    },
+
+  listContent: {
+    alignItems: 'center',
+    width: '95%',
+  },
+
+  overlayContainer: {
+      height: 450,
+      width: 325,
+      justifyContent: 'center',
+      alignItems: 'stretch',
+  },
+
+  safeZone : {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 270,
+  },
+
+  separatorLine: {
+    height: 1,
+    backgroundColor: 'black',
+    paddingTop: 2,
+    width: 'auto',
+  },
+
+  items: {
+    alignItems: 'stretch',
+  },
+
+  icons: {
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+  },
+
+  updates: {
+    margin: 5
+  },
+
+  issueText: {
+    fontSize: 20
+  },
+
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+
+  buttonClose: {
+    backgroundColor: "#293241",
+  },
+
+  modalPadding: {
+    paddingTop: 250,
+    alignItems: 'center'
+  },
+
+  modalBackground: {
+    backgroundColor: '#98c1d9',
+    height: 'auto',
+    width: 300,
+    padding: 20,
+    alignItems: 'center',
+    borderRadius: 8,
+    shadowOffset: { height: 3, width: 3 },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+  },
+
+  modalText: {
+    fontSize: 18,
+    color: '#293241',
+    paddingBottom: 10
+  },
+
+  textStyle: {
+    color: '#e0fbfc'
+  }
+});
+
+
+  // const updateComments = (text) => {
     //API post to comment database
     /*
     setComments([...comments, text])
@@ -58,9 +236,10 @@ export default (props) => {
       })
     }
     */
-  }
+  // }
 
-  const deleteComment  = (id) =>{
+  // const deleteComment  = (id) =>{
+  //   setComments(comments.filter(comments => comments.id !== id))
     //const ID = id
     // Alert.alert(
     //   "Alert Title",
@@ -87,7 +266,7 @@ export default (props) => {
     //       ),
     //   }
     // );
-  }
+  // }
 
   /*
   const editComment(id){
@@ -106,77 +285,3 @@ export default (props) => {
 				});
   }
   */
-
-  return (
-    <View>
-        <ListItem onPress={toggleOverlay} bottomDivider={true} style={styles.container}>
-        <ListItem.Content>
-            <ListItem.Title style={styles.content}>{props.item.body}</ListItem.Title> 
-        </ListItem.Content>
-        </ListItem>
-        <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle= {styles.overlayContainer}>
-            <FlatList
-                data={comments}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-                ItemSeparatorComponent={SeparatorComponent}
-            />
-            <SafeAreaView >
-            <View style = {styles.safeZone}>
-                <Input
-                placeholder="Comment"
-                // leftIcon={{ type: 'font-awesome', name: 'comment' }}
-                style={styles}
-                onChangeText={updateText}
-                />
-                <Ionicons name="send" size={24} color="black" onPress = {updateComments}/>
-            </View>
-                </SafeAreaView>
-        </Overlay>
-    </View>
-  );
-}
-
-
-const styles = StyleSheet.create({
-    container: {
-        height: 60,
-        width: 325,
-      },
-    content: {
-        // backgroundColor: 'black',
-    },
-    overlayContainer: {
-        height: 450,
-        width: 325,
-        justifyContent: 'center',
-        alignItems: 'stretch',
-    },
-    issues: {
-        height: 'auto',
-        width: 250,
-    },
-    safeZone : {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: 270,
-    },
-    separatorLine: {
-      height: 1,
-      backgroundColor: 'black',
-      paddingTop: 2,
-      width: 'auto',
-    },
-    items: {
-      alignItems: 'stretch',
-      width: 270,
-    },
-    icons: {
-      justifyContent: 'flex-end',
-      flexDirection: 'row',
-    },
-    updates: {
-      margin: 5
-    }
-  });

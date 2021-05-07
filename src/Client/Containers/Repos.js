@@ -3,6 +3,7 @@ import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView, StatusBa
 import { Route, Switch, Link } from "react-router-native";
 import Navbar from '../../components/navBar';
 import Issues from '../../components/issues';
+import Name from '../../components/name';
 
 export default ({history}) => {
 
@@ -13,7 +14,9 @@ export default ({history}) => {
   });
 
   const renderItem = ({ item }) => (
-    <Issues id ={item.id} item = {item}/>
+    <View style = {styles.linkItems}>
+      <Issues id ={item.id} item = {item}/>
+    </View>
   );
 
   const SeparatorComponent = () => {
@@ -21,23 +24,23 @@ export default ({history}) => {
   }
 
   return (
-    <View style = {styles.container} >
-      <Image></Image>
-      <Text style = {styles.textIntro}>Your Repositories</Text>
-      <SafeAreaView style = {styles.linkList}>
+    <SafeAreaView style = {styles.container} >
+      <Name/>
+      <View style = {styles.info}>
+      <Text style = {styles.textIntro}>Present Issues</Text>
+      <SafeAreaView>
         <Switch>
           <FlatList
             data={issues}
             renderItem={renderItem}
             keyExtractor={repo => repo.id}
-            // ItemSeparatorComponent={SeparatorComponent}
+            ItemSeparatorComponent={SeparatorComponent}
           />
         </Switch>
       </SafeAreaView>
-      <Button title="Login Page" onPress={() => history.push("/")} />
-      <Text>Home!</Text>
+      </View>
       <Navbar/>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -45,32 +48,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 100,
-    width: 'auto',
-  },
-  linkList: {
-    flex: 1,
     width: '100%',
-    alignItems: 'center'
-    // marginTop: StatusBar.currentHeight || 0,
+    backgroundColor: '#3d5a80'
   },
-  linkItems : {
-    fontSize: 25,
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    width: 'auto'
+
+  info : {
+    alignItems: 'center',
+    paddingTop: 75,
   },
+
   textIntro: {
     fontSize: 40,
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 25,
+    color: '#e0fbfc'
   },
+
   separatorLine: {
-    height: 1,
-    backgroundColor: 'black',
-    paddingTop: 2,
-    width: 'auto',
-  }
+    paddingTop: 10,
+  },
+
+  issue: { 
+    alignItems: 'stretch',
+    width: '95%'
+  },
+
+  linkItems : {
+    width: '95%',
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: 'white',
+    shadowOffset: { height: 3, width: 3 },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+  },
 });
