@@ -2,15 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Modal, Alert, Pressable, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { Button, Overlay, ListItem, Icon, Input} from 'react-native-elements';
 import { Ionicons, Entypo, AntDesign, Foundation  } from '@expo/vector-icons'; 
+import { Octokit } from "@octokit/rest";
 
 export default (props) => {
   const [visible, setVisible] = useState(false);
-  const [comments, setComments] = useState([{id: 1 , body: 'hello heloo heheheheheh ee i llloooo f  this is test 1 for a really long comment to see how it behaves'},{id:'This is the second Repo', body: 'this is test 2'},{id:'This is the third Repo', body: 'this is test 3'}]) 
-  // const [user, setUser]= useState([{user: 'Geo', }, {User: 'Andrei'}])
+  const [comments, setComments] = useState([]) 
   const [text, setText] = useState("");
   const [commentText, setCommentText] =useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalID, setModalID] = useState('');
+
+  useEffect(()=> {
+    const {org, repoName, issue_number} = props
+    console.log('org', org, 'repo', repoName, 'issue_number', issue_number)
+    const octokit = new Octokit({
+      auth: "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",
+    })
+
+    octokit.rest.issues.listComments({
+      owner: org,
+      repo: repoName,
+      issue_number,
+    })
+    .then((comments)=>{
+      setComments([comments]),
+      console.log('comments', comments);
+    })
+  }, [])
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -27,8 +45,10 @@ export default (props) => {
   const replaceOldComment = () => {
     if(commentText === '') return
     const newComments = comments.map(item => {
-      if(item.id === modalID){
-        item.body = commentText;
+      if(item.data[0].id === modalID){
+        console.log('modalID', modalID)
+        console.log('commentText', commentText)
+        item.data[0].body = commentText;
         return item;
       }
       return item;
@@ -39,12 +59,12 @@ export default (props) => {
 
   const deleteComment  = (id) => {
     console.log('id', id)
-    setComments(comments.filter(comments => comments.id !== id))
+    setComments(comments.filter(comments => comments.data[0].id !== id))
   };
 
   const updateComments = (text) => {
     if(text === '') return
-    setComments([...comments, {id: text, body: text}]);
+    setComments([...comments, {data: [{body: text, id: text}]}]);
     console.log('comments', comments)
   };
  
@@ -61,12 +81,12 @@ export default (props) => {
                 comments.map((l, i) => (
                     <ListItem key={i} bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title>{l.body}</ListItem.Title>
+                        <ListItem.Title>{l.data[0]?.body}</ListItem.Title>
                       </ListItem.Content>
                       <View style = {styles.icons}>
-                        <AntDesign id = {l.id} name="delete" size={24} color="black" style ={styles.updates} onPress = {() => deleteComment(l.id)}/>
+                        <AntDesign id = {l.id} name="delete" size={24} color="black" style ={styles.updates} onPress = {() => deleteComment(l.data[0].id)}/>
                         <Foundation id = {l.id} name="clipboard-pencil" size={24} color="black" style ={styles.updates} onPress = {(event) => {
-                          setModalID(l.id)
+                          setModalID(l.data[0].id)
                           setModalVisible(true)
                           }}/>
                       </View>
@@ -96,7 +116,7 @@ export default (props) => {
                             setModalVisible(!modalVisible) 
                           }}
                         >
-                          <Text style={styles.textStyle}>Hide Modal</Text>
+                          <Text style={styles.textStyle}>Update</Text>
                         </Pressable>
                       </View>  
                     </View> 
@@ -172,7 +192,7 @@ const styles = StyleSheet.create({
   },
 
   issueText: {
-    fontSize: 20
+    fontSize: 12
   },
 
   button: {

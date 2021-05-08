@@ -4,18 +4,32 @@ import { Route, Switch, Link } from "react-router-native";
 import Navbar from '../../components/navBar';
 import Issues from '../../components/issues';
 import Name from '../../components/name';
+import { Octokit } from "@octokit/rest";
 
-export default ({history}) => {
+export default ({history, location}) => {
 
-  const [issues, setIssues] = useState([{id:'This is the first Repo', body: 'this is test 1'},{id:'This is the second Repo', body: 'this is test 2'},{id:'This is the third Repo', body: 'this is test 3'}]);
+  const [issues, setIssues] = useState([]);
 
   useEffect(() => {
-    //api call for individual issues
-  });
+    console.log('props', location.state)
+    const octokit = new Octokit({
+      auth: "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",
+    })
+  
+    octokit
+      .paginate("GET /repos/{owner}/{repo}/issues", {
+        owner: location.state.org,
+        repo: location.state.repoName,
+      })
+      .then((issues) => {
+        setIssues(issues)
+        console.log('issues', issues)
+      });
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style = {styles.linkItems}>
-      <Issues id ={item.id} item = {item}/>
+      <Issues org = {location.state.org} repoName = {location.state.repoName} issue_number = {item.number} item = {item}/>
     </View>
   );
 
@@ -33,7 +47,7 @@ export default ({history}) => {
           <FlatList
             data={issues}
             renderItem={renderItem}
-            keyExtractor={repo => repo.id}
+            keyExtractor={repo => repo.id.toString()}
             ItemSeparatorComponent={SeparatorComponent}
           />
         </Switch>
@@ -55,6 +69,7 @@ const styles = StyleSheet.create({
   info : {
     alignItems: 'center',
     paddingTop: 75,
+    paddingBottom: 225
   },
 
   textIntro: {

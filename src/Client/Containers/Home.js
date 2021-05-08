@@ -3,18 +3,31 @@ import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView} from 're
 import { Route, Switch, Link } from "react-router-native";
 import Navbar from '../../components/navBar';
 import Name from '../../components/name';
+import { Octokit } from "@octokit/rest";
 
 export default ({history}) => {
 
-  const [repos, setRepos] = useState([{id:'This is the first Repo'},{id:'This is the second Repo'},{id:'This is the third Repo'}]);
-
+  const [repos, setRepos] = useState([]);
+  
   useEffect(() => {
-    //api call for individual repos
-  });
+  const octokit = new Octokit({
+    auth: "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",
+  })
+  
+  octokit.rest.repos
+    .listForOrg({
+      org: "open-source-labs",
+      type: "public",
+    })
+    .then(({ data }) => {
+      setRepos(data);
+      console.log('data', data)
+    });
+  }, []);
 
   const renderItem = ({ item }) => (
-      <Link to="/repos/:item.id" underlayColor="#f0f4f7" style = {styles.linkItems}>
-        <Text style = {styles.linkText}>{item.id}</Text>
+      <Link child = {item.name} to={{ pathname: `/repos/:${item.id}`, state: {repoName: item.name, org: item.owner.login}}} underlayColor="#f0f4f7" style = {styles.linkItems}>
+        <Text style = {styles.linkText}>{item.name}</Text>
       </Link>
   );
 
@@ -32,7 +45,7 @@ export default ({history}) => {
             <FlatList
               data={repos}
               renderItem={renderItem}
-              keyExtractor={repo => repo.id}
+              keyExtractor={repo => repo.id.toString()}
               ItemSeparatorComponent={SeparatorComponent}
             />
           </Switch>
@@ -54,6 +67,7 @@ const styles = StyleSheet.create({
   info : {
     alignItems: 'center',
     paddingTop: 75,
+    paddingBottom: 225
   },
 
   linkItems : {
@@ -85,3 +99,5 @@ const styles = StyleSheet.create({
     fontSize: 20
   }
 });
+
+

@@ -8,8 +8,8 @@ import Name from '../../components/name';
 export default ({history}) => {
 
 const [user, setUser] = useState('JBargers');
-const [repos, setRepos] = useState(3);
-const [issues, setIssues] = useState(12);
+const [repos, setRepos] = useState(16);
+const [issues, setIssues] = useState(82);
 
 return (
   <SafeAreaView style = {styles.container} >
