@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView, StatusBar} from 'react-native';
+import { Button, Text, View, Image, StyleSheet, FlatList, SafeAreaView} from 'react-native';
 import { Route, Switch, Link } from "react-router-native";
 import Navbar from '../../components/navBar';
+import Name from '../../components/name';
 
 export default ({history}) => {
 
@@ -12,9 +13,9 @@ export default ({history}) => {
   });
 
   const renderItem = ({ item }) => (
-    <Link to="/repos/:item.id" underlayColor="#f0f4f7" >
-      <Text style = {styles.linkItems}>{item.id}</Text>
-    </Link>
+      <Link to="/repos/:item.id" underlayColor="#f0f4f7" style = {styles.linkItems}>
+        <Text style = {styles.linkText}>{item.id}</Text>
+      </Link>
   );
 
   const SeparatorComponent = () => {
@@ -22,23 +23,23 @@ export default ({history}) => {
   }
 
   return (
-    <View style = {styles.container} >
-      <Image></Image>
-      <Text style = {styles.textIntro}>Your Repositories</Text>
-      <SafeAreaView style = {styles.linkList}>
-        <Switch>
-          <FlatList
-            data={repos}
-            renderItem={renderItem}
-            keyExtractor={repo => repo.id}
-            ItemSeparatorComponent={SeparatorComponent}
-          />
-        </Switch>
-      </SafeAreaView>
-      <Button title="Login Page" onPress={() => history.push("/")} />
-      <Text>Home!</Text>
+    <SafeAreaView style = {styles.container}>
+      <Name/>
+      <View style = {styles.info}>
+        <Text style = {styles.textIntro}>Your Repositories</Text>
+        <SafeAreaView>
+          <Switch>
+            <FlatList
+              data={repos}
+              renderItem={renderItem}
+              keyExtractor={repo => repo.id}
+              ItemSeparatorComponent={SeparatorComponent}
+            />
+          </Switch>
+        </SafeAreaView>
+      </View>
       <Navbar/>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -46,32 +47,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 100,
-    width: 'auto',
-  },
-  linkList: {
-    flex: 1,
     width: '100%',
-    alignItems: 'center'
-    // marginTop: StatusBar.currentHeight || 0,
+    backgroundColor: '#3d5a80'
   },
+
+  info : {
+    alignItems: 'center',
+    paddingTop: 75,
+  },
+
   linkItems : {
-    fontSize: 25,
+    width: 250,
     padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    width: 'auto'
+    borderWidth: 1,
+    backgroundColor: 'white',
+    shadowOffset: { height: 3, width: 3 },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
+
   textIntro: {
     fontSize: 40,
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 25,
+    color: '#e0fbfc'
   },
+
   separatorLine: {
-    height: 1,
-    backgroundColor: 'black',
-    paddingTop: 2,
-    width: 'auto',
+    paddingTop: 10,
+  },
+
+  linkText: {
+    fontSize: 20
   }
 });
