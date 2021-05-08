@@ -15,6 +15,7 @@ const schema = gql`
     id: ID!
     username: String!
     email: String!
+    token: String!
     projects: [Project!]
     project(id: ID!): Project
   }

@@ -1,18 +1,14 @@
-// const express = require('express')
-// const loginRouter = express.Router()
-// // const loginController = require('../controllers/loginController')
-// const dbController = require('../controllers/dbController')
+/* eslint-disable no-unused-expressions */
 
-// loginRouter.use(
-//   '/login',
-//   // loginController.authWithGithub,
-//   // loginController.checkUser,
-//   dbController.checkUserInDatabase,
-//   (req, res) => {
-//     if (!req.query.userInfo) dbController.addUserToDatabase,
-//     next()
-//   },
-//   (req, res) => {
-//     res.status(200).send('/home')
-//   }
-// );
+const express = require('express');
+require('dotenv').config();
+
+const router = express.Router();
+const clientID = process.env.GITHUB_AUTH_ID;
+
+router.get('/', (req, res) => {
+  console.log('logging in');
+  res.status(200).redirect(`https://github.com/login/oauth/authorize?client_id=${clientID}&scope=repo`);
+});
+
+module.exports = router;

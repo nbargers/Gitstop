@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, Image ,TouchableOpacity, Alert} from 'react-native';
+import { Button, Text, View, StyleSheet, Image ,TouchableOpacity, Alert, SafeAreaView} from 'react-native';
 
 export default ({history}) => {
 
@@ -36,22 +36,19 @@ export default ({history}) => {
 
 
   return (
-    <View style= {styles.container}>
-      
-      <Text>Welcome to GitStop! 
-       <Text>{'\n'}</Text>
-        This is your teams shop to work with fixing those flats and bumps in your code. Work collaboratively and keep track of all present issues in your repositories to stay ahead of the curve. 
-      </Text>
-      <TouchableOpacity style={styles.loginButton} activeOpacity={0.5} onPress={showAlert}>
-        <Image 
-          source={require('../github-icon.png')} 
-          style={styles.ImageIconStyle} 
-          />
-        <Text style={styles.TextStyle}> Login Using Github </Text>
-
-      </TouchableOpacity>
-      <Button title="Home Page" onPress={() => history.push("/home")}/>
-    </View> 
+    <SafeAreaView style= {styles.container}>
+      <View style = {styles.introBox}>
+        <Text style = {styles.label}>Welcome to GitStop!</Text>
+        <Text style = {styles.about}>This is your teams shop to work with fixing those flats and bumps in your code. Work collaboratively and keep track of all present issues in your repositories to stay ahead of the curve. </Text>
+        <TouchableOpacity style={styles.loginButton} activeOpacity={0.5} onPress={() => history.push("/home")}>
+          <Image 
+            source={require('../github-icon.png')} 
+            style={styles.ImageIconStyle} 
+            />
+          <Text style={styles.TextStyle}> Login Using Github </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView> 
   );
 };
 
@@ -61,10 +58,10 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      paddingTop: 100,
-      marginLeft: 25,
-      marginRight: 25
+      backgroundColor: '#293241',
+      width: '100%'
     },
+
   loginButton: {
     backgroundColor: '#555555',
     borderRadius: 8,
@@ -74,10 +71,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     },
-  introText: {
-    height: 50,
-    width: 50,
-  },
 
   ImageIconStyle: {
     padding: 10,
@@ -85,22 +78,39 @@ const styles = StyleSheet.create({
     height: 25,
     width: 25,
     resizeMode : 'stretch',
+   },
   
- },
-  
- TextStyle :{
-  
+ TextStyle: {
    color: "#fff",
    marginBottom : 4,
    marginRight :20,
-   
- },
+  },
+
+  introBox: {
+    height: 275,
+    width: "80%",
+    backgroundColor: '#98c1d9',
+    alignItems: 'center',
+    borderRadius: 10,
+    borderWidth: 1,
+    shadowOffset: { height: 3, width: 3 },
+    shadowColor: '#e0fbfc',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+  },
+
+  label: {
+    color: '#e0fbfc',
+    fontSize: 30,
+    paddingBottom: 20,
+    paddingTop: 20,
+  },
   
- SeparatorLine :{
-  
- backgroundColor : '#fff',
- width: 1,
- height: 40
-  
- }
+  about: {
+    color: '#e0fbfc',
+    fontSize: 15,
+    paddingBottom: 30,
+    paddingLeft: 15,
+    paddingRight: 15,
+  }
 });

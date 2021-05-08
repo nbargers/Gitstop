@@ -12,7 +12,7 @@ const resolvers = {
     },
     comments: () => {
       return Object.values(commentData);
-    }
+    },
   },
   User: {
     projects: (user) => {
